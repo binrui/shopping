@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+    	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
+			<bean class="org.springframework.mobile.device.site.SitePreferenceWebArgumentResolver" />
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+	<context:annotation-config />
+	<context:property-placeholder location="classpath*:/marker.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
+	
+	<!-- Scan @Controller，And Register Controller as a Bean -->
+	<context:component-scan base-package="com.binrui.shop" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<!-- Handles HTTP GET requests for /static/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/static/**" location="/assets/" />
+	<mvc:resources mapping="/static/css/**" location="/assets/css/" />
+	<mvc:resources mapping="/static/img/**" location="/assets/img/" />
+	<mvc:resources mapping="/static/js/**" location="/assets/js/" />
+	<mvc:resources mapping="/data/**" location="/data/" />
+	<mvc:resources mapping="/theme/**" location="/themes/" />
+	<mvc:view-controller path="/" view-name="redirect:/" />
+	<!-- freemarker configuration
+	<bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:config/freemarker.properties"/>
+	</bean>
+	-->
+	<!-- Configure to plugin JSON as request and response in method handler -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter"/>
+            </list>
+        </property>
+        <property name="webBindingInitializer">
+			<bean class="com.inspur.mng.core.bind.WebBinder" />
+		</property> 
+    </bean>
+
+    <!-- Configure bean to convert JSON to POJO and vice versa -->
+    <bean id="jsonMessageConverter"
+                class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    </bean>
+    
+	<!-- freemarker viewresolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+	 	<property name="viewClass"  
+            value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />  
+		<property name="prefix" value="" />
+		<property name="suffix" value=".html" />
+		<property name="contentType" value="text/html;charset=UTF-8" />
+		<property name="cache" value="true" />
+		<property name="requestContextAttribute" value="request" />
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="exposeRequestAttributes" value="false" />
+		<property name="exposeSessionAttributes" value="false" />
+	</bean> 
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath"	value="/WEB-INF/views/" />
+		<property name="defaultEncoding" value="UTF-8" />  
+		<!-- <property name="freemarkerSettings" ref="freemarkerConfiguration"/> -->
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="tag_syntax">auto_detect</prop>
+				<prop key="template_update_delay">2</prop>
+				<prop key="defaultEncoding">UTF-8</prop>
+				<prop key="output_encoding">UTF-8</prop>
+				<prop key="locale">zh_CN</prop>
+				<prop key="number_format">0.##</prop>
+				<prop key="date_format">yyyy-MM-dd</prop>
+				<prop key="time_format">HH:mm:ss</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="classic_compatible">true</prop>
+				<!-- <prop key="template_exception_handler">com.inspur.mng.core.error.FreemarkerException</prop> -->
+				<prop key="auto_import">/common/ftl/spring.ftl as webfinal,/common/ftl/web.ftl  as website</prop>
+			</props>
+		</property>
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="xml_escape" value-ref="fmXmlEscape" />
+			</map>
+		</property>
+		
+	</bean>
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>  	 
+ 	<!-- file upload setting -->
+ 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8" />  
+	    <property name="maxUploadSize" value="104857600" /><!-- 上传文件大小限制为100M，31*1024*1024 -->
+	    <property name="maxInMemorySize" value="4096" />
+	</bean>
+	<!-- international message resource -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/locale/common/message</value>
+				<value>/WEB-INF/locale/console/message</value>
+				<value>/WEB-INF/locale/website/message</value>
+			</list>
+		</property>
+		<property name="useCodeAsDefaultMessage" value="true"/>  
+    	<property name="defaultEncoding" value="UTF-8"/>  
+    	<property name="cacheSeconds" value="60"/>  
+	</bean>
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="cookieName" value="locale"/>
+		<property name="cookiePath" value="/"/>
+    	<property name="cookieMaxAge" value="31536000"/>  
+    	<property name="defaultLocale" value="zh_CN"/>  
+	</bean>
+	<!-- multi theme support -->
+	<bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource">  
+    	<property name="basenamePrefix" value="theme."></property>  
+	</bean>  
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.CookieThemeResolver">  
+		<property name="cookieName" value="theme"/>
+		<property name="cookiePath" value="/"/>
+    	<property name="cookieMaxAge" value="31536000"/>  
+		<property name="defaultThemeName" value="default" />  
+	</bean>  
+	<!-- web request interceptors -->
+	<mvc:interceptors>
+		<bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+		<bean class="org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor" />
+		<mvc:interceptor>  
+			<mvc:mapping path="/*" />  
+			<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">  
+				<property name="paramName" value="language"></property>
+			</bean>
+		</mvc:interceptor>  
+		<mvc:interceptor>  
+			<mvc:mapping path="/*" />  
+			<bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+				<property name="paramName" value="theme"></property>
+			</bean>
+		</mvc:interceptor>  
+	</mvc:interceptors>  
+	<!-- exception handler -->
+	<bean id="exceptionResolver" class="com.binrui.shop.web.BinRuiExceptionResolver">
+		<property name="exceptionMappings">
+             <props>
+                 <prop key="java.lang.Exception">common/error</prop>
+                 <prop key="java.lang.Throwable">common/error</prop>
+             </props>
+         </property>
+         <property name="statusCodes">
+             <props>
+                 <prop key="common/error">500</prop>
+                 <prop key="common/error">404</prop>
+             </props>
+         </property>
+         <!-- 设置日志输出级别，不定义则默认不输出警告等错误日志信息 -->     
+         <property name="warnLogCategory" value="WARN"></property>     
+         <!-- 默认错误页面，当找不到上面mappings中指定的异常对应视图时，使用本默认配置 -->     
+         <property name="defaultErrorView" value="common/error"></property>     
+         <!-- 默认HTTP状态码 -->     
+         <property name="defaultStatusCode" value="500"></property> 
+	</bean>
+</beans>
