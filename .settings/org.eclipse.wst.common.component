@@ -2,6 +2,7 @@
     <wb-module deploy-name="Binrui.Shopping">
         <wb-resource deploy-path="/" source-path="/WebRoot" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/config"/>
         <property name="context-root" value="Binrui.Shopping"/>
         <property name="java-output-path" value="/Binrui.Shopping/build/classes"/>
     </wb-module>
