@@ -1,0 +1,48 @@
+1.修改catalina.sh文件，配置JVM内存
+JAVA_OPTS="-server -Xms1024M -Xmx1024M -Xss256K -Djava.awt.headless=true -Dfile.encoding=utf-8 -XX:PermSize=64M -XX:MaxPermSize=128m"
+
+2.修改连接协议支持NIO
+<Connector port="8080"
+        protocol="org.apache.coyote.http11.Http11NioProtocol"
+        executor="tomcatThreadPool"
+        compression="on"
+        compressionMinSize="2048"
+        maxThreads="30000"
+        minSpareThreads="512"
+        maxSpareThreads="2048"
+        enableLookups="false"
+        redirectPort="8443"
+        acceptCount="35000"
+        debug="0"
+        connectionTimeout="40000"
+        disableUploadTimeout="true" URIEncoding="UTF-8" useBodyEncodingForURI="true" />
+ 
+
+连接器使用的线程池的名子：executor="tomcatThreadPool"
+ 
+连接器端口 ：port="8090"
+ 
+连接器使用的传输方式 ：protocol="org.apache.coyote.http11.Http11NioProtocol"
+ 
+传输时是否支持压缩 ：compression="on"
+ 
+压缩的大小 ：compressionMinSize="2048"
+ 
+
+
+3.设置Tomcat连接器池。
+ 
+在配置文件中修改如下配置：
+ 
+<Executor name="tomcatThreadPool" namePrefix="catalina-exec-" maxThreads="1000" minSpareThreads="350" />
+
+线程池名：name="tomcatThreadPool"
+
+线程前缀：namePrefix="catalina-exec-"
+
+最大产生线程数：maxThreads="1000"
+
+最小初始现程数：minSpareThreads="350"
+
+
+如有疑问，请咨询浪潮政务平台研发团队。
