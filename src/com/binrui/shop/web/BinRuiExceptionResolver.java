@@ -25,6 +25,9 @@ public class BinRuiExceptionResolver extends SimpleMappingExceptionResolver {
 			if (statusCode != null) {
 				applyStatusCodeIfPossible(request, response, statusCode);
 			}
+			//设置上下文路径
+			request.setAttribute("root", request.getContextPath());
+			//设置系统异常信息
 			request.setAttribute("exceptionMessage", ex.getMessage());
 			return getModelAndView(viewName, ex, request);
 		}else {

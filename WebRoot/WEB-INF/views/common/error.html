@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 center login-header">
+            <h2>欢迎访问农产品信息系统</h2>
+        </div>
+        <!--/span-->
+    </div><!--/row-->
+
+    <div class="row">
+        <div class="well col-md-5 center login-box">
+            <div class="alert alert-info">
+                ${exceptionMessage}
+            </div>
+            <form class="form-horizontal" action="${root}/" method="get">
+                <fieldset>
+                    <p>
+                    	这是一个错误页面说明服务器出现了问题，请返回首页重新登录。
+                    </p>
+
+                    <p class="center col-md-5">
+                        <button type="submit" class="btn btn-primary">返回首页</button>
+                    </p>
+                </fieldset>
+            </form>
+        </div>
+        <!--/span-->
+    </div><!--/row-->
+</div><!--/.fluid-container-->
+</body>
+</html>
